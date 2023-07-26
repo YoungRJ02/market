@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace用于指定当前的映射文件和哪个接口进行映射,需要指定接口的文件路径,路径需要是包的完整路径结构-->
+<mapper namespace="com.cy.market.mapper.AddressMapper">
+    <!--Integer insert(Address address);-->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="aid">
+        INSERT INTO t_address (
+            uid, `name`, province_name, province_code, city_name, city_code, area_name, area_code, zip,
+            address, phone, tel,tag, is_default, created_user, created_time, modified_user, modified_time
+        ) VALUES (
+                     #{uid}, #{name}, #{provinceName}, #{provinceCode}, #{cityName}, #{cityCode}, #{areaName},
+                     #{areaCode}, #{zip}, #{address}, #{phone}, #{tel}, #{tag}, #{isDefault}, #{createdUser},
+                     #{createdTime}, #{modifiedUser}, #{modifiedTime}
+                 )
+    </insert>
+
+    <!--Integer countByUid(Integer uid);-->
+    <select id="countByUid"  resultType="java.lang.Integer">
+        select count(*) from t_address where uid=#{uid}
+    </select>
+
+    <!--List<District> findByUid(Integer uid);-->
+    <select id="findByUid" resultType="com.cy.market.entity.Address">
+        select * from t_address where uid=#{uid}
+        order by is_default DESC,created_time DESC
+    </select>
+
+    <!--Address findByAid(Integer aid);-->
+    <select id="findByAid" resultType="com.cy.market.entity.Address">
+        select * from t_address where aid=#{aid}
+    </select>
+
+    <!--Integer updateNonDefault(Integer uid);-->
+    <update id="updateNonDefault">
+        update t_address set is_default=0 where uid=#{uid}
+    </update>
+
+    <!--Integer updateDefaultByAid(Integer aid, String modifiedUser, Date modifiedTime);-->
+    <update id="updateDefaultByAid">
+        update t_address set is_default=1,modified_user=#{modifiedUser}, modified_time=#{modifiedTime} where aid=#{aid}
+    </update>
+
+    <!--Integer updateUserAddressByAid(Address address);-->
+    <update id="updateUserAddressByAid">
+        update t_address set name = #{name},province_name = #{provinceName},
+                             province_code = #{provinceCode},city_name = #{cityName},
+                             city_code = #{cityCode},area_name = #{areaName},
+                             area_code =#{areaCode},zip = #{zip},address = #{address},
+                             phone = #{phone},tel = #{tel},tag = #{tag},
+                             modified_user =#{modifiedUser},modified_time = #{modifiedTime}
+        where aid = #{aid}
+    </update>
+
+    <!--Integer deleteByAid(Integer aid);-->
+    <delete id="deleteByAid">
+        delete from t_address where aid=#{aid}
+    </delete>
+
+    <!--Address findLastModified(Integer uid);-->
+    <select id="findLastModified" resultType="com.cy.market.entity.Address">
+        select * from t_address where uid=#{uid} order by modified_time DESC limit 0,1
+    </select>
+</mapper>

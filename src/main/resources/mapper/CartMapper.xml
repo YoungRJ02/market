@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cy.market.mapper.CartMapper">
+    <!--Integer insert(Cart cart);-->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="cid">
+        insert into t_cart (uid, pid, price, num, created_user, created_time, modified_user, modified_time)
+        values (#{uid}, #{pid}, #{price}, #{num}, #{createdUser}, #{createdTime}, #{modifiedUser}, #{modifiedTime})
+    </insert>
+
+    <!--Integer updateNumByCid(Integer cid, Integer num, String modifiedUser, Date modifiedTime);-->
+    <update id="updateNumByCid">
+        update t_cart set
+        num=#{num}, modified_user=#{modifiedUser}, modified_time=#{modifiedTime}
+        where cid=#{cid}
+    </update>
+
+    <!--Cart findByUidAndPid(Integer pid, Integer uid);-->
+    <select id="findByUidAndPid" resultType="com.cy.market.entity.Cart">
+        select * from t_cart where uid=#{uid} AND pid=#{pid}
+    </select>
+
+    <!--List<CartVO> findVOByUid(Integer uid);-->
+    <select id="findVOByUid" resultType="com.cy.market.vo.CartVO">
+        select cid, uid, pid, t_cart.price, t_cart.num, title, t_product.price as realPrice, image
+        from t_cart left join t_product on t_cart.pid = t_product.id
+        where uid = #{uid} order by t_cart.created_time desc
+    </select>
+
+    <!--Cart findByCid(Integer cid);-->
+    <select id="findByCid" resultType="com.cy.market.entity.Cart">
+        select * from t_cart where cid=#{cid}
+    </select>
+
+    <!--int deleteCartByCid(Integer cid);-->
+    <delete id="deleteCartByCid">
+        delete from t_cart where cid = #{cid}
+    </delete>
+
+    <!--List<CartVO> findVOByCids(Integer[] cids);-->
+    <select id="findVOByCids" resultType="com.cy.market.vo.CartVO">
+        select cid, uid, pid, t_cart.price, t_cart.num, title, t_product.price as realPrice, image
+        from t_cart left join t_product on t_cart.pid = t_product.id
+        where cid in (
+        <foreach collection="array" item="cid" separator=",">
+            #{cid}
+        </foreach>)
+        order by t_cart.created_time desc
+    </select>
+
+</mapper>
